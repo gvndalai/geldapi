@@ -2,7 +2,8 @@
 const postgres = require("postgres");
 require("dotenv").config();
 
-let { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID } = process.env;
+let { PGHOST, PGDATABASE, PGUSER, PGPASSWORD, ENDPOINT_ID, SECRET_KEY } =
+  process.env;
 
 const sql = postgres({
   host: PGHOST,

@@ -2,9 +2,11 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const cors = require("cors");
 const sql = require("./db");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 const PORT = 8080;
+const secretKey = process.env.SECRET_KEY;
 
 app.use(express.json());
 app.use(cors());
@@ -26,7 +28,9 @@ app.post("/signup", async (req, res) => {
   try {
     const data =
       await sql`INSERT INTO users(email, name, password, avatarImg, createdAt, updatedAt) 
-      VALUES (${email},${name}, ${encryptedPassword}, 'img', ${new Date()}, ${new Date()}) `;
+      VALUES (${email},${name}, ${encryptedPassword}, 'img', ${new Date()}, ${new Date()} )`;
+
+    const token = jwt.sign({});
   } catch (error) {
     throw res.send({ error: "ERROR occured" });
   }
@@ -39,6 +43,10 @@ app.post("/login", async (req, res) => {
   try {
     const users = await sql`SELECT * FROM users WHERE email = ${email}`;
 
+    if (users.length === 0) {
+      return res.status(400).send("User not found");
+    }
+
     const result = await bcrypt.compare(password, users[0].password);
 
     if (result) {
@@ -46,9 +54,11 @@ app.post("/login", async (req, res) => {
     }
     res.status(400).send("Incorrect password");
   } catch (error) {
-    throw res.send(error);
+    console.error("Error during login:", error);
+    res.status(500).send("Internal Server Error");
   }
 });
+
 app.listen(PORT, () => {
   console.log("Apllication is running at http://localhost:" + PORT);
 });
