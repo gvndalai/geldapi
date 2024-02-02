@@ -59,6 +59,27 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.get("/transaction", async (req, res) => {
+  const data = await sql`SELECT * FROM transaction;`;
+
+  res.send(data);
+});
+
+app.post("/transaction", async (req, res) => {
+  const { time, payee, date, amount, note, type } = req.body;
+
+  try {
+    const transactionData = await sql`
+      INSERT INTO transaction(userId, categoryId, name, amount, transactionType, description, transactionDate, transactionTime)
+      VALUES (null, null, ${payee}, ${amount}, ${type}, ${note}, ${date}, ${time})
+    `;
+    res.status(201).send({ message: "Successfully created" });
+  } catch (error) {
+    console.error("Error creating transaction:", error);
+    res.status(500).send({ error: "Internal Server Error" });
+  }
+});
+
 app.listen(PORT, () => {
   console.log("Apllication is running at http://localhost:" + PORT);
 });
