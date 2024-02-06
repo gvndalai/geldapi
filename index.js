@@ -104,29 +104,27 @@ app.get("/transaction", async (req, res) => {
 });
 
 app.post("/transaction", verifyToken, async (req, res) => {
-  const { time, payee, date, amount, note, type } = req.body;
-
+  const { time, payee, date, amount, note, type, userId, category } = req.body;
+  console.log(req.body);
+  console.log("from Login", req.user.userId);
   try {
-    const userId = req.user.id;
-    const categoryId = req.category.id;
-
+    // const userId = req.user.userId;
+    // console.log("userId", user);
+    // const categoryId = req.category.id;
     const user = await sql`SELECT * FROM users WHERE id = ${userId}`;
-    const category = await sql`SELECT * FROM category WHERE id = ${categoryId}`;
-
+    // const category = await sql`SELECT * FROM category WHERE id = ${categoryId}`;
     if (user.length === 0) {
       return res.status(400).send("User not found");
     }
 
-    if (category.length === 0) {
-      return res.status(400).send("Category not found");
-    }
+    // if (category.length === 0) {
+    //   return res.status(400).send("Category not found");
+    // }
 
     const transactionData = await sql`
-      INSERT INTO transaction(userId, categoryId, name, amount, transactionType, description, transactionDate, transactionTime, createdAt, updatedAt)
-      VALUES (${userId}, ${categoryId}, ${payee}, ${amount}, ${type}, ${note}, ${date}, ${time}, NOW(), NOW())
+      INSERT INTO transaction(userId, name, amount, transactionType, description, transactionDate, transactionTime, createdAt, updatedAt, categoryid)
+      VALUES (${userId}, ${payee}, ${amount}, ${type}, ${note}, ${date}, ${time}, NOW(), NOW(), ${category})
     `;
-
-    console.log("Transaction created successfully:", transactionData);
 
     res.status(201).send({ message: "Successfully created" });
   } catch (error) {

@@ -4,15 +4,16 @@ require("dotenv").config();
 const secretKey = process.env.SECRET_KEY;
 
 const verifyToken = (req, res, next) => {
-  const refreshToken =
+  const accessToken =
     req.headers.authorization && req.headers.authorization.split(" ")[1];
+  console.log("accessToken", accessToken);
 
-  if (!refreshToken) {
+  if (!accessToken) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 
   try {
-    const decoded = jwt.verify(refreshToken, secretKey);
+    const decoded = jwt.verify(accessToken, secretKey);
 
     req.user = decoded;
     console.log("req.user", req.user);
