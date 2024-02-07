@@ -105,8 +105,7 @@ app.get("/transaction", async (req, res) => {
 
 app.post("/transaction", verifyToken, async (req, res) => {
   const { time, payee, date, amount, note, type, userId, category } = req.body;
-  console.log(req.body);
-  console.log("from Login", req.user.userId);
+
   try {
     // const userId = req.user.userId;
     // console.log("userId", user);
